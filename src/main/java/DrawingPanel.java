@@ -29,7 +29,8 @@ public class DrawingPanel extends Pane {
         DRAW_CIRCLE,
         DRAW_RECTANGLE,
         DRAW_POLYGON,
-        EDIT
+        EDIT,
+        DELETE
     }
     public void setCurrentMode(ToolMode mode) {
     this.currentMode = mode;
@@ -43,16 +44,23 @@ public class DrawingPanel extends Pane {
     for (FigureData data : savedData) {
         Shape shape = null;
 
-        if ("RECTANGLE".equals(data.type)) {
-            Rectangle r = new Rectangle(data.x, data.y, data.width, data.height);
-            shape = r;
-        } else if ("CIRCLE".equals(data.type)) {
-            Circle c = new Circle(data.x, data.y, data.radius);
-            shape = c;
-        } else if ("POLYGON".equals(data.type)) {
-            Polygon p = new Polygon();
-            p.getPoints().addAll(data.points);
-            shape = p;
+        switch (data.type) {
+            case "RECTANGLE": {
+                Rectangle r = new Rectangle(data.x, data.y, data.width, data.height);
+                shape = r;
+                break;
+            }
+            case "CIRCLE": {
+                Circle c = new Circle(data.x, data.y, data.radius);
+                shape = c;
+                break;
+            }
+            case "POLYGON": {
+                Polygon p = new Polygon();
+                p.getPoints().addAll(data.points);
+                shape = p;
+                break;
+            }
         }
 
         if (shape != null) {
@@ -74,8 +82,6 @@ public class DrawingPanel extends Pane {
         if (node instanceof Shape) {
             Shape s = (Shape) node;
             FigureData fd = new FigureData();
-            
-            // Podstawowe dane
             fd.rotate = s.getRotate();
             fd.scaleX = s.getScaleX();
             fd.scaleY = s.getScaleY();
@@ -179,6 +185,12 @@ public class DrawingPanel extends Pane {
                     }
                 }
                 break; 
+            case DELETE: 
+            if (e.getTarget() instanceof Shape) {
+                this.getChildren().remove((Shape) e.getTarget());
+                currentFigure = null;
+            }
+    break;
             default:
                 throw new AssertionError();
             }
