@@ -23,7 +23,7 @@ public class MenuView extends StackPane {
                                 "- Lewy przycisk myszy: dodanie zaznaczonej wcześniej figury \n\n" +
                                 "Tryb edytowania: \n" +
                                 "- Lewy przycisk myszy: zaznaczenie figury do edycji \n" +
-                                "- Przytrzymanie prawego przycisku myszy: obracanie figurą \n" +
+                                "- Przytrzymanie shifta i lewego przycisku myszy: obracanie figurą \n" +
                                 "- Przytrzymanie lewego przycisku myszy: przesunięcie figury w inne miejsce \n" +
                                 "- Scroll: Powiększenie/Pomniejszenie figury");
         }
@@ -31,7 +31,7 @@ public class MenuView extends StackPane {
     public MenuView(Stage stage) {   
         VBox menu = new VBox(10);
         Button btnStart = new Button("Start");
-        btnStart.setOnAction(e -> {Scene drawViewScene = new Scene(new DrawView(stage), 800, 600); stage.setScene(drawViewScene);});
+        btnStart.setOnAction(e -> {Scene drawViewScene = new Scene(new DrawView(stage), 1280, 840); stage.setScene(drawViewScene);});
         Button btnHelp = new Button("Instrukcja");
         btnHelp.setOnAction(e -> {InfoDialog help = new InfoDialog(); help.Help(); help.showAndWait(); });
         Button btnInfo = new Button("Info");

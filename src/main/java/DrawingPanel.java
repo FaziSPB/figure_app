@@ -12,7 +12,11 @@ import javafx.scene.shape.Shape;
 
 public class DrawingPanel extends Pane {
     Shape currentFigure = null;
+    ContextMenu currentMenu = null;
     int verLeft = 0;
+    int ver = 0;
+    double startX = 0;
+    double startY = 0;
     ToolMode currentMode = ToolMode.DRAW_CIRCLE;
     double lastMouseX;
     double lastMouseY;
@@ -36,23 +40,20 @@ public class DrawingPanel extends Pane {
         setOnMousePressed(e -> {
             switch (currentMode) {
             case DRAW_CIRCLE:
-                Circle circle = new Circle();
-                circle.setCenterX(e.getX());
-                circle.setCenterY(e.getY());
-                circle.setRadius(50);
-                circle.setStroke(Color.BLACK);
-                circle.setFill(Color.TRANSPARENT);
-                this.getChildren().add(circle);
+                startX = e.getX();
+                startY = e.getY();    
+                currentFigure = new Circle(startX, startY, 0);
+                currentFigure.setStroke(Color.BLACK);
+                currentFigure.setFill(Color.TRANSPARENT);
+                this.getChildren().add(currentFigure);
                 break;
             case DRAW_RECTANGLE: 
-                Rectangle rectangle = new Rectangle();
-                rectangle.setX(e.getX());
-                rectangle.setY(e.getY());
-                rectangle.setWidth(50);
-                rectangle.setHeight(50);
-                rectangle.setStroke(Color.BLACK);
-                rectangle.setFill(Color.TRANSPARENT);
-                this.getChildren().add(rectangle);
+                startX = e.getX();
+                startY = e.getY();
+                currentFigure = new Rectangle(startX, startY, 0, 0);
+                currentFigure.setStroke(Color.BLACK);
+                currentFigure.setFill(Color.TRANSPARENT);
+                this.getChildren().add(currentFigure);
                 break;
             case DRAW_POLYGON:
                 if (currentFigure == null) {
@@ -62,7 +63,7 @@ public class DrawingPanel extends Pane {
                     dialog.setContentText("Ile wierzchołków chcesz narysować?");
                     dialog.showAndWait().ifPresent(res -> {
                         try {
-                            int ver = Integer.parseInt(res);
+                            ver = Integer.parseInt(res);
                             if (ver < 3) {
                                 System.out.println("Wielokąt musi mieć min. 3 wierzchołki");
                                 return;
@@ -127,8 +128,27 @@ public class DrawingPanel extends Pane {
                     lastMouseX = e.getX();
                     lastMouseY = e.getY();}
                 } 
-                
             }
+            if (currentMode == ToolMode.DRAW_RECTANGLE && currentFigure instanceof Rectangle) {
+                    Rectangle rectangle = (Rectangle) currentFigure;
+                    double currentX = e.getX();
+                    double currentY = e.getY();
+                    double width = Math.abs(currentX - startX);
+                    double height = Math.abs(currentY - startY);
+                    rectangle.setX(Math.min(startX, currentX));
+                    rectangle.setY(Math.min(startY, currentY));
+                    rectangle.setWidth(width);
+                    rectangle.setHeight(height);
+                }
+            if (currentMode == ToolMode.DRAW_CIRCLE && currentFigure instanceof Circle) {
+                    Circle circle = (Circle) currentFigure;
+                    double currentX = e.getX();
+                    double currentY = e.getY();
+                    double width = Math.abs(currentX - startX);
+                    double height = Math.abs(currentY - startY);
+                    double radius = Math.sqrt(width*width + height*height);
+                    circle.setRadius(radius);
+                }
         });
         setOnScroll(e -> {
             if (currentMode == ToolMode.EDIT && currentFigure != null) {
@@ -142,15 +162,17 @@ public class DrawingPanel extends Pane {
         });
         setOnContextMenuRequested(e -> {
             if (currentMode == ToolMode.EDIT && currentFigure != null) {
-                ContextMenu contextMenu = new ContextMenu();
+                if (currentMenu != null && currentMenu.isShowing()) {
+                    currentMenu.hide();}
+                currentMenu = new ContextMenu();
                 ColorPicker colorPicker = new ColorPicker((Color) currentFigure.getFill());
                 colorPicker.setOnAction(event -> {
                     currentFigure.setFill(colorPicker.getValue());
                 });
                 CustomMenuItem colorItem = new CustomMenuItem(colorPicker);
                 colorItem.setHideOnClick(false); 
-                contextMenu.getItems().add(colorItem);
-                contextMenu.show(currentFigure, e.getScreenX(), e.getScreenY());
+                currentMenu.getItems().add(colorItem);
+                currentMenu.show(currentFigure, e.getScreenX(), e.getScreenY());
             }
         });
     }

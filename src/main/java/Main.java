@@ -6,7 +6,7 @@ import javafx.stage.Stage;
 public class Main extends Application {
     @Override
     public void start(Stage stage) {
-        stage.setScene(new Scene(new MenuView(stage), 800, 600));
+        stage.setScene(new Scene(new MenuView(stage), 1280, 840));
         stage.setTitle("Figury");
         stage.show();
         stage.sizeToScene();

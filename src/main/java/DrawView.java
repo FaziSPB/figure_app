@@ -20,7 +20,7 @@ public class DrawView extends BorderPane {
         Button btnEdit = new Button("Edytuj figurę");
         btnEdit.setOnAction(e -> drawingPanel.setCurrentMode(DrawingPanel.ToolMode.EDIT));
         Button btnMenu = new Button("Wróć do menu");
-        btnMenu.setOnAction(e -> {Scene MenuView = new Scene(new MenuView(stage), 800, 600); stage.setScene(MenuView);});
+        btnMenu.setOnAction(e -> {Scene MenuView = new Scene(new MenuView(stage), 1280, 840); stage.setScene(MenuView);});
         navbar.getChildren().addAll(btnCircle, btnRect, btnPoly, btnEdit);
         navbar.setAlignment(Pos.CENTER);
         setTop(navbar);
