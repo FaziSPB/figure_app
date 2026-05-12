@@ -10,6 +10,12 @@ public class Main extends Application {
         stage.setTitle("Figury");
         stage.show();
         stage.sizeToScene();
+        stage.setOnCloseRequest(e -> {
+            if (stage.getScene().getRoot() instanceof DrawView) {
+                DrawView dv = (DrawView) stage.getScene().getRoot();
+                dv.getDrawingPanel().Autosave();
+            }
+        });
     }
 
     public static void main(String[] args) {

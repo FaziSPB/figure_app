@@ -6,9 +6,10 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 public class DrawView extends BorderPane {
+    private DrawingPanel drawingPanel;
     
     public DrawView(Stage stage) {
-        DrawingPanel drawingPanel = new DrawingPanel();
+        drawingPanel = new DrawingPanel();
         setCenter(drawingPanel);
         HBox navbar = new HBox(10);
         Button btnCircle = new Button("Okrag");
@@ -24,6 +25,8 @@ public class DrawView extends BorderPane {
         navbar.getChildren().addAll(btnCircle, btnRect, btnPoly, btnEdit);
         navbar.setAlignment(Pos.CENTER);
         setTop(navbar);
-        
+    }
+    public DrawingPanel getDrawingPanel() {
+        return drawingPanel; 
     }
 }

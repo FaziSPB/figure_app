@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.CustomMenuItem;
@@ -10,6 +13,7 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 
+
 public class DrawingPanel extends Pane {
     Shape currentFigure = null;
     ContextMenu currentMenu = null;
@@ -20,6 +24,7 @@ public class DrawingPanel extends Pane {
     ToolMode currentMode = ToolMode.DRAW_CIRCLE;
     double lastMouseX;
     double lastMouseY;
+    
     public enum ToolMode {
         DRAW_CIRCLE,
         DRAW_RECTANGLE,
@@ -31,10 +36,80 @@ public class DrawingPanel extends Pane {
     if (currentFigure != null) {
         currentFigure.setStroke(Color.BLACK);
         currentFigure = null;
+    }}
+    public void loadFigures() {
+    List<FigureData> savedData = DataManager.load();
+    if (savedData == null) return; 
+    for (FigureData data : savedData) {
+        Shape shape = null;
+
+        if ("RECTANGLE".equals(data.type)) {
+            Rectangle r = new Rectangle(data.x, data.y, data.width, data.height);
+            shape = r;
+        } else if ("CIRCLE".equals(data.type)) {
+            Circle c = new Circle(data.x, data.y, data.radius);
+            shape = c;
+        } else if ("POLYGON".equals(data.type)) {
+            Polygon p = new Polygon();
+            p.getPoints().addAll(data.points);
+            shape = p;
+        }
+
+        if (shape != null) {
+            shape.setFill(Color.valueOf(data.colorHex));
+            shape.setRotate(data.rotate);
+            shape.setScaleX(data.scaleX);
+            shape.setScaleY(data.scaleY);
+            shape.setTranslateX(data.translateX);
+            shape.setTranslateY(data.translateY);
+            shape.setStroke(Color.BLACK);
+
+            this.getChildren().add(shape);
+        }
+    }}
+    public void Autosave() {
+    List<FigureData> list = new ArrayList<>();
+    
+    for (var node : this.getChildren()) {
+        if (node instanceof Shape) {
+            Shape s = (Shape) node;
+            FigureData fd = new FigureData();
+            
+            // Podstawowe dane
+            fd.rotate = s.getRotate();
+            fd.scaleX = s.getScaleX();
+            fd.scaleY = s.getScaleY();
+            fd.translateX = s.getTranslateX();
+            fd.translateY = s.getTranslateY();
+            fd.colorHex = s.getFill().toString(); 
+
+            if (s instanceof Rectangle) {
+                Rectangle r = (Rectangle) s;
+                fd.type = "RECTANGLE";
+                fd.x = r.getX();
+                fd.y = r.getY();
+                fd.width = r.getWidth();
+                fd.height = r.getHeight();
+            } else if (s instanceof Circle) {
+                Circle c = (Circle) s;
+                fd.type = "CIRCLE";
+                fd.x = c.getCenterX();
+                fd.y = c.getCenterY();
+                fd.radius = c.getRadius();
+            }
+            else if (s instanceof Polygon) {
+                Polygon p = (Polygon) s;
+                fd.type = "POLYGON";
+                fd.points.addAll(p.getPoints());
+            }
+            list.add(fd);
+        }
     }
+    DataManager.save(list); 
 }
     public DrawingPanel() {
         MouseEvents();
+        loadFigures();
     }
     public void MouseEvents() {
         setOnMousePressed(e -> {
