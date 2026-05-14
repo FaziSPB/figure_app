@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -11,20 +12,15 @@ import java.util.List;
  * Dane zapisywane są w pliku binarnym przy użyciu serializacji.
  */
 public class DataManager {
-    /** Nazwa pliku zapisu danych */
-    private static final String FILE_NAME = "figures.dat";
     /**
      * Zapisuje listę figur do pliku.
      *
      * @param data lista danych figur
      */
-    public static void save(List<FigureData> data) {
-        try (ObjectOutputStream oos =
-                 new ObjectOutputStream(new FileOutputStream(FILE_NAME))) {
-
+    public static void save(List<FigureData> data, File file) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
             oos.writeObject(data);
             System.out.println("Zapisano");
-
         } catch (IOException e) {
             System.err.println("Błąd" + e.getMessage());
         }
@@ -35,12 +31,9 @@ public class DataManager {
      * @return lista figur lub null gdy brak pliku
      */
     @SuppressWarnings("unchecked")
-    public static List<FigureData> load() {
-        try (ObjectInputStream ois =
-                 new ObjectInputStream(new FileInputStream(FILE_NAME))) {
-
+    public static List<FigureData> load(File file) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
             return (List<FigureData>) ois.readObject();
-
         } catch (FileNotFoundException e) {
             System.out.println("Brak zapisanych danych.");
         } catch (IOException | ClassNotFoundException e) {

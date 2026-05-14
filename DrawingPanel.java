@@ -1,3 +1,4 @@
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+
 
 /**
  * Panel odpowiedzialny za rysowanie oraz edycję figur.
@@ -58,7 +60,6 @@ public class DrawingPanel extends Pane {
      */
     public DrawingPanel() {
         MouseEvents();
-        loadFigures();
     }
     /**
      * Zmienia aktualny tryb pracy aplikacji.
@@ -76,9 +77,11 @@ public class DrawingPanel extends Pane {
     /**
      * Wczytuje figury zapisane wcześniej w pliku.
      */
-    private void loadFigures() {
-        List<FigureData> savedData = DataManager.load();
+    public void loadFile(File file) {
+        List<FigureData> savedData = DataManager.load(file);
         if (savedData == null) return;
+        this.getChildren().clear(); 
+        this.currentFigure = null;
         for (FigureData data : savedData) {
             Shape shape = null;
             switch (data.type) {
@@ -111,10 +114,10 @@ public class DrawingPanel extends Pane {
         }
     }
     /**
-     * Automatyczny zapis wszystkich figur znajdujących się
+     * Zapis wszystkich figur znajdujących się
      * aktualnie na panelu.
      */
-    public void Autosave() {
+    public void saveFile(File file) {
         List<FigureData> list = new ArrayList<>();
         for (var node : this.getChildren()) {
             if (node instanceof Shape) {
@@ -149,7 +152,7 @@ public class DrawingPanel extends Pane {
                 list.add(fd);
             }
         }
-        DataManager.save(list);
+        DataManager.save(list, file);
     }
     /**
      * Rejestruje wszystkie zdarzenia myszy.
@@ -280,7 +283,7 @@ public class DrawingPanel extends Pane {
             }
         });
         /**
-         * Scroll myszy – skalowanie figury.
+         * Scroll – skalowanie figury.
          */
         setOnScroll(e -> {
             if (currentMode == ToolMode.EDIT && currentFigure != null) {
@@ -290,7 +293,7 @@ public class DrawingPanel extends Pane {
             }
         });
         /**
-         * Menu kontekstowe zmiany koloru (PPM).
+         * Menu zmiany koloru (PPM).
          */
         setOnContextMenuRequested(e -> {
             if (currentMode == ToolMode.EDIT && currentFigure != null) {

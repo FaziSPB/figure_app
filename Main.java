@@ -18,13 +18,6 @@ public class Main extends Application {
         stage.setScene(new Scene(new MenuView(stage), 1280, 840));
         stage.setTitle("Figury");
         stage.show();
-        // Automatyczny zapis figur przy zamykaniu programu
-        stage.setOnCloseRequest(e -> {
-            if (stage.getScene().getRoot() instanceof DrawView) {
-                DrawView dv = (DrawView) stage.getScene().getRoot();
-                dv.getDrawingPanel().Autosave();
-            }
-        });
     }
     /**
      * Uruchamia aplikację.
